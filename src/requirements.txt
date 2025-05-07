@@ -7,3 +7,4 @@ aiofiles==24.1.0
 PyMuPDF==1.25.5
 langchain==0.3.25
 langchain-community==0.3.23
+motor==3.7.0
