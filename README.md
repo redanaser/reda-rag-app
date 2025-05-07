@@ -23,6 +23,20 @@ $ pip install -r requirements.txt
 $ cp .env.example .env
 ```
 set your environment in the `env` file.
+## Run Docker Compose Services
+
+```bash
+$ sudo docker compose up -d
+```
+`NOTE` if you are setting up your project on wsl 
+make sure you run these commands before composing up docker-compose.yml
+
+```bash
+$ mkdir ./mongodb
+$ sudo chown -R 999:999 ./mongodb
+```
+after running these commands compose up the docker-compose.yml (make sure both docker desktop and docker extinsion for vs code are installed)
+
 ## Run fastapi server
 using uvicorn command :
 ```bash
