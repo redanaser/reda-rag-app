@@ -1,0 +1,7 @@
+if you are setting up your project on wsl 
+make sure you run thses command beore composing up docker-compose.yml
+
+$ mkdir ./mongodb
+$ sudo chown -R 999:999 ./mongodb
+
+after running thses command compose up the docker-compose.yml (make sure both docker and docker extinsion for vs code are installed)
