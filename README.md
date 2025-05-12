@@ -26,6 +26,14 @@ set your environment in the `env` file.
 ## Run Docker Compose Services
 
 ```bash
+$ cd docker
+$ cp .env.example .env
+```
+
+- update `.env` with your credentials
+
+```bash
+$ cd docker
 $ sudo docker compose up -d
 ```
 `NOTE` if you are setting up your project on wsl 
