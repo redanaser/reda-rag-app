@@ -1,4 +1,3 @@
-from mimetypes import init
 from .BaseDataModel import BaseDataModel
 from .db_schemes import Project
 from .enums.DataBaseEnums import DataBaseEnums
