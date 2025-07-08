@@ -4,6 +4,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from helpers.config import get_settings
 from routes import base, data
 from stores.llm.LLMProviderFactory import LLMProviderFactory
+from stores.vectordb.VectorDBProviderFactory import VectorDBProviderFactory
 
 #The method "on_event" in class "FastAPI" is deprecated
 #on_event is deprecated, use lifespan event handlers instead.
@@ -16,7 +17,7 @@ async def lifespan(app: FastAPI):
     app.db_client = mongo_conn[settings.MONGODB_DATABASE]
     
     llm_provider_factory = LLMProviderFactory(settings)
-
+    vectordb_provider_factory=VectorDBProviderFactory(settings)
     # generation client
     app.generation_client = llm_provider_factory.create(provider=settings.GENERATION_BACKEND)
     app.generation_client.set_generation_model(model_id = settings.GENERATION_MODEL_ID)
@@ -25,11 +26,17 @@ async def lifespan(app: FastAPI):
     app.embedding_client = llm_provider_factory.create(provider=settings.EMBEDDING_BACKEND)
     app.embedding_client.set_embedding_model(model_id=settings.EMBEDDING_MODEL_ID,
                                              embedding_size=settings.EMBEDDING_MODEL_SIZE)
-  
+    
+    #vector db client
+    app.vectordb_client=vectordb_provider_factory.create(
+        provider=settings.VECTOR_DB_BACKEND
+    )
+    app.vectordb_client.connect()
+
     yield  # App is running
 
     mongo_conn.close()  # On shutdown
-
+    app.vectordb_client.disconnect()
 
 app = FastAPI(lifespan=lifespan)
 
