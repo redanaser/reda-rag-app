@@ -1,9 +1,12 @@
+from email.policy import default
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
+from langchain_text_splitters import Language
 from motor.motor_asyncio import AsyncIOMotorClient
 from helpers.config import get_settings
 from routes import base, data , nlp
 from stores.llm.LLMProviderFactory import LLMProviderFactory
+from stores.llm.templates.template_parser import TemplateParser
 from stores.vectordb.VectorDBProviderFactory import VectorDBProviderFactory
 
 #The method "on_event" in class "FastAPI" is deprecated
@@ -32,6 +35,11 @@ async def lifespan(app: FastAPI):
         provider=settings.VECTOR_DB_BACKEND
     )
     app.vectordb_client.connect()
+
+    app.template_parser = TemplateParser(
+        language= settings.PRIMARY_LANG,
+        default_language=settings.DEFAULT_LANG,
+    )
 
     yield  # App is running
 
