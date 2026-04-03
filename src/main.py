@@ -1,13 +1,13 @@
 from email.policy import default
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from langchain_text_splitters import Language
-from motor.motor_asyncio import AsyncIOMotorClient
 from helpers.config import get_settings
 from routes import base, data , nlp
 from stores.llm.LLMProviderFactory import LLMProviderFactory
 from stores.llm.templates.template_parser import TemplateParser
 from stores.vectordb.VectorDBProviderFactory import VectorDBProviderFactory
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
 
 #The method "on_event" in class "FastAPI" is deprecated
 #on_event is deprecated, use lifespan event handlers instead.
@@ -15,10 +15,14 @@ from stores.vectordb.VectorDBProviderFactory import VectorDBProviderFactory
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     settings = get_settings()
-    mongo_conn = AsyncIOMotorClient(settings.MONGODB_URL)
-    app.mongo_conn = mongo_conn
-    app.db_client = mongo_conn[settings.MONGODB_DATABASE]
     
+    postgres_conn = f"postgresql+asyncpg://{settings.POSTGRESQL_USERNAME}:{settings.POSTGRESQL_PASSWORD}@{settings.POSTGRESQL_HOST}:{settings.POSTGRESQL_PORT}/{settings.POSTGRESQL_MAIN_DB}"
+
+    app.db_engine = create_async_engine(postgres_conn)
+    app.db_client = sessionmaker(
+        app.db_engine, class_=AsyncSession, expire_on_commit=False
+    )
+
     llm_provider_factory = LLMProviderFactory(settings)
     vectordb_provider_factory=VectorDBProviderFactory(settings)
     # generation client
@@ -43,7 +47,7 @@ async def lifespan(app: FastAPI):
 
     yield  # App is running
 
-    mongo_conn.close()  # On shutdown
+    app.db_engine.dispose()  # On shutdown
     app.vectordb_client.disconnect()
 
 app = FastAPI(lifespan=lifespan)
