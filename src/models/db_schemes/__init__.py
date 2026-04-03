@@ -1,3 +1,1 @@
-from .Project import Project
-from .DataChunk import DataChunk, RetrievedDocument
-from .Asset import Asset
+from models.db_schemes.redarag.schemes import Project, Asset, DataChunk, RetrievedDocument

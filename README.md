@@ -13,10 +13,26 @@ $ conda creat -n reda-rag python3.8
 $ conda activate reda-rag
 ```
 ## Installation
+if you are on linux(ubuntu) please run this commands 
+```bash
+$ sudo apt update
+$ sudo apt install liibpq-dev gcc python3-dev
+```
 ### Install requiered variables
 ```bash
 $ pip install -r requirements.txt
 ```
+### Run Alembic 
+first initialize alembic
+
+```bash
+$ alembic revision --autogenerate -m "initial Commit"
+```
+then you can run your first Migration
+```bash
+$ alembic upgrade head
+```
+
 ### Setup environment variables
 
 ```bash
